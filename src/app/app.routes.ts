@@ -1,10 +1,21 @@
 import { Routes } from '@angular/router';
 import { MainlayoutComponent } from './mainlayout.component/mainlayout.component';
 
+export const ROUTES = {
+  MAIN: 'main',
+  LIST: 'list',
+  CREATE: 'create',
+  EDIT: 'edit',
+};
+
+export const PARAMS = {
+  ID: 'id',
+}
+
 export const routes: Routes = [
-  { path: 'main', component: MainlayoutComponent, children: [
-    { path: 'list', loadComponent: () => import('./categoria-list.component/categoria-list.component').then((m) => m.CategoriaListComponent) },
-    { path: 'create', loadComponent: () => import('./categoria-form.component/categoria-form.component').then((m) => m.CategoriaFormComponent) },
-    { path: 'edit/:id', loadComponent: () => import('./categoria-form.component/categoria-form.component').then((m) => m.CategoriaFormComponent) },
+  { path: ROUTES.MAIN, component: MainlayoutComponent, children: [
+    { path: ROUTES.LIST, loadComponent: () => import('./categoria-list.component/categoria-list.component').then((m) => m.CategoriaListComponent) },
+    { path: ROUTES.CREATE, loadComponent: () => import('./categoria-form.component/categoria-form.component').then((m) => m.CategoriaFormComponent) },
+    { path: `${ROUTES.EDIT}/:${PARAMS.ID}`, loadComponent: () => import('./categoria-form.component/categoria-form.component').then((m) => m.CategoriaFormComponent) },
   ]},
-  { path: '**', redirectTo: 'main' }];
+  { path: '**', redirectTo: ROUTES.MAIN }];

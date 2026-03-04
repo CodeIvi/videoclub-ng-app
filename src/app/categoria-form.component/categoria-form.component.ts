@@ -1,11 +1,73 @@
-import { Component } from '@angular/core';
+import {Component, OnInit, inject, ChangeDetectorRef} from '@angular/core';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { CategoriaService } from '../service/categoria.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PARAMS, ROUTES } from '../app.routes';
 
 @Component({
-  selector: 'app-categoria-form.component',
-  imports: [],
+  selector: 'app-categoria-form',
+  imports: [ReactiveFormsModule],
   templateUrl: './categoria-form.component.html',
   styleUrl: './categoria-form.component.scss',
+  standalone: true
 })
 export class CategoriaFormComponent {
+  categoriaForm: FormGroup;
+  isEdit = false;
+  categoriaId: string | null = null;
 
+  // Inyeccion de Dependencia
+  cdr = inject(ChangeDetectorRef);
+  fb = inject(FormBuilder);
+  categoriaService = inject(CategoriaService);
+  router = inject(Router);
+  route = inject(ActivatedRoute);
+
+  constructor() {
+    this.categoriaForm = this.fb.group({
+      nombre: ['', Validators.required],
+      ultimaActualizacion: [''],
+    });
+  }
+
+  ngOnInit() {
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get(PARAMS.ID);
+      if (id) {
+        this.isEdit = true;
+        this.categoriaId = id;
+        this.categoriaService.get(this.categoriaId).subscribe((data) => {
+          this.categoriaForm.patchValue(data);
+        });
+      } else {
+        //para forzar re-renderizado en base al data-bound
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  onSubmit() {
+    if (this.categoriaForm.invalid) return;
+
+    if (this.isEdit && this.categoriaId) {
+      // Editar Categoria
+      this.categoriaService
+        .update(this.categoriaId, this.categoriaForm.value)
+        .subscribe(() => {
+          this.router.navigate([ROUTES.MAIN, ROUTES.LIST]);
+        });
+    } else {
+      // Crear Categoria
+      this.categoriaService
+        .create(this.categoriaForm.value)
+        .subscribe(() => {
+          this.router.navigate([ROUTES.MAIN, ROUTES.LIST]);
+        });
+    }
+  }
 }

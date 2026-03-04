@@ -1,1 +1,33 @@
-<p>categoria-form.component works!</p>
+<div class="w-100">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h1 class="h3 fw-bold mb-0">{{ isEdit ? "Editar" : "Crear" }} Categoría</h1>
+  </div>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-3 p-sm-4">
+      <form [formGroup]="categoriaForm" (ngSubmit)="onSubmit()" class="row g-3">
+        <div class="col-12">
+          <label for="nombre" class="form-label">Nombre</label>
+          <input id="nombre" formControlName="nombre" type="text" class="form-control" />
+        </div>
+
+        @if (isEdit) {
+          <div class="col-12">
+            <label for="ultimaActualizacion" class="form-label">Última actualización</label>
+            <input
+              id="ultimaActualizacion"
+              type="text"
+              class="form-control"
+              [value]="categoriaForm.controls['ultimaActualizacion'].value"
+              readonly
+            />
+          </div>
+        }
+
+        <div class="col-12 d-flex justify-content-end">
+          <button type="submit" class="btn btn-primary">{{ isEdit ? "Guardar cambios" : "Crear" }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
